@@ -1,10 +1,11 @@
 import { createContext, useState } from "react";
-import { productsArray } from "./productsStore";
+import { productsArray, getProductData } from "./productsStore";
 
 export const CartContext = createContext({
   items: [],
   getProductQty: () => {},
   addOneToCart: () => {},
+  deleteOneFromCart: () => {},
   deleteFromCart: () => {},
   getTotalCost: () => {},
 });
@@ -67,11 +68,21 @@ export function CartProvider({ children }) {
     );
   }
 
+  function getTotalCost() {
+    let totalCost = 0;
+    cartProducts.map((cartItem) => {
+      const productData = getProductData(cartItem.id);
+      totalCost += productData.price * cartItem.quantity;
+    });
+    return totalCost;
+  }
+
   const contextValue = {
-    items: [],
+    items: cartProducts,
     getProductQty,
     addOneToCart,
     deleteFromCart,
+    removeOneFromCart,
     getTotalCost,
   };
 
@@ -79,3 +90,5 @@ export function CartProvider({ children }) {
     <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
   );
 }
+
+export default CartProvider;
